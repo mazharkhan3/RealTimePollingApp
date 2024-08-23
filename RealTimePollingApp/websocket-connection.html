@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Websocket Connection</title>
+</head>
+<body>
+
+<h1>Websocket Connection</h1>
+
+<h3>Connect to websocket</h3>
+<button id="connect">Connect</button>
+<button id="disconnect" style="display: none">Disconnect</button>
+
+<h3>Connection message</h3>
+<label for="message"></label>
+<input type="text" id="message" />
+<button id="send">Send</button>
+<div id="connection-message">
+    
+</div>
+
+
+<script>
+    const connectButton = document.getElementById('connect');
+    const disconnectButton = document.getElementById('disconnect');
+    const sendButton = document.getElementById('send');
+    
+    let ws = null;
+    
+    connectButton.addEventListener('click', () => {
+        ws = new WebSocket('ws://localhost:8080/ws/');
+        ws.onopen = () => {
+            connectButton.style.display = 'none';
+            disconnectButton.style.display = 'block';
+            console.log('Connected to websocket');
+        };
+        ws.onmessage = (message) => {
+            debugger
+            const connectionMessage = document.getElementById('connection-message');
+            connectionMessage.append(`<p>${message.data}</p>`);
+            
+            console.log('Received message: ' + message.data);
+        };
+        ws.onclose = () => {
+            connectButton.style.display = 'block';
+            disconnectButton.style.display = 'none';
+            console.log('Disconnected from websocket');
+        };
+    });
+    
+    sendButton.addEventListener('click', () => {
+        const message = document.getElementById('message').value;
+        ws.send(message);
+    });
+    
+    disconnectButton.addEventListener('click', () => {
+        ws.close();
+    });
+    
+    
+</script>
+
+</body>
+</html>
